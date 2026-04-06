@@ -1,88 +1,123 @@
-# RiraXOne
+# ✈️ RiraXOne – Flight Booking Web App
 
-RiraXOne is a simple flight booking web application built using Python (Flask), HTML/CSS,Javascript and Bootstrap. The app allows users to search for flights, book them, and proceed to a mock payment page. This is a demo application, with mock flight data.
+RiraXOne is a full-stack flight booking web application built using **Flask, HTML, CSS, and JavaScript**.
+It allows users to sign up, log in securely, and book flights with a clean and interactive UI.
 
-Features-
-* Search flights between major Indian cities (mock data).
-* Select travel date, passenger count, and class.
-* View flight details with airline, departure time, duration, stops, and price.
-* Create a booking and view a ticket summary.
-* Redirect to a mock payment page after booking.
-* Responsive design with Bootstrap.
-* Interactive ticket card with barcode-style booking reference.
 
-Folder Structure-
+## 🚀 Features
+
+* 🔐 User Authentication (Signup, Login, Logout)
+* 🔑 Secure password hashing using Bcrypt
+* 🎫 Flight search functionality
+* ✈️ Flight booking system (with backend integration)
+* 🧾 User-specific booking history (coming soon / in progress)
+* 🎨 Responsive UI using Bootstrap
+* 💾 SQLite database for storing user data
+
+---
+
+## 🛠️ Tech Stack
+
+**Frontend:**
+
+* HTML5
+* CSS3
+* JavaScript
+* Bootstrap
+
+**Backend:**
+
+* Python (Flask)
+
+**Database:**
+
+* SQLite
+
+**Libraries Used:**
+
+* Flask-SQLAlchemy
+* Flask-Bcrypt
+* PyJWT
+
+
+## 📂 Project Structure
+
 RiraXOne/
+├── app.py
+├── requirements.txt
+├── instance/
+│   └── riraxone.db
+├── templates/
+│   └── RiraXOne.html
+├── static/
+│   └── style.css
 
-│
 
-├─ app.py                  # Flask backend application
+## ⚙️ Installation & Setup
 
-├─ RiraXOne.html           # Main landing page
+### 1. Clone the repository
 
-├─ style.css               # Global CSS
-
-├─ env/                    # Python virtual environment
-
-├─ static/                 # Static HTML pages
-
-│   ├─ flight.html         # Flight search results page
-
-│   ├─ book.html           # Booking page
-
-│   ├─ boarding.html       # Boarding pass page (optional)
-
-│   └─ payment.html        # Payment confirmation page
-
-Requirements-
-Python 3.8+
-Flask (pip install flask)
-A modern web browser (Chrome, Firefox, Edge, etc.)
-
-Installation-
-Clone this repository:
-git clone https://github.com/rishikapandagre/RiraXOne.git
+git clone https://github.com/Rids09/RiraXOne.git
 cd RiraXOne
-(Optional) Create a virtual environment:
-python -m venv env
-Activate the virtual environment:
-Windows (PowerShell):
-.\env\Scripts\Activate.ps1
-Linux/Mac
-source env/bin/activate
-Install Flask (if not already installed):
-pip install flask
-Running the App
-Start the Flask server:
+
+
+### 2. Create virtual environment (optional)
+
+
+python -m venv venv
+venv\Scripts\activate
+
+
+### 3. Install dependencies
+
+pip install -r requirements.txt
+
+### 4. Run the app
+
 python app.py
-Open your browser and go to:
-http://127.0.0.1:5000/
-This will open the main landing page (RiraXOne.html).
 
-How to Test-
-Step 1: Search Flights
-On the homepage, scroll: to Book Flight section.
-Enter:
-Departure Airport (IATA code, e.g., DEL, BOM, BLR)
-Arrival Airport (IATA code, e.g., MAA, HYD)
-Date
-Select number of passengers and class
-Click Search Flight.
-You will be redirected to the flight.html page showing available flights.
-Step 2: Book a Flight
-On the flight.html page, click Book Now for a flight.
-You will be redirected to book.html with booking details pre-filled.
-Enter lead passenger name and email, then click Proceed to Payment.
-Step 3: Mock Payment
-After booking, you will be redirected to payment.html.
-This page will show booking confirmation with a ticket/card.
-Step 4: Optional Boarding Pass
-If you implement boarding.html, you can test generating a boarding pass from the booking ID.
 
-Notes-
-This is a demo app, flight and booking data are mocked.
-The backend is fully in Flask, serving static pages and JSON responses for flight search and booking.
-All redirects between pages are handled via query parameters (?flight_id=...&source=...&destination=...).
+## 🌐 Usage
+
+1. Open browser and go to:
+
+
+http://127.0.0.1:5000
+
+
+2. Create an account (Signup)
+
+3. Login using credentials
+
+4. Search and book flights
+
+
+## 🔒 Authentication
+
+* Passwords are securely hashed using **Bcrypt**
+* JWT (JSON Web Token) is used for session handling
+
+
+## 🚧 Future Improvements
+
+* 🧾 Booking history dashboard
+* ❌ Cancel bookings
+* 💳 Payment integration
+* 🌍 Real flight API integration
+* 📱 Fully responsive mobile design
+
+## 👩‍💻 Author
+
+**Ridhi Singh**
+B.Tech CSE (Cyber Security)
+## ⭐ Contribute
+
+Feel free to fork this repo and improve it!
+
+## 📌 Note
+
+This project is built for learning and demonstration purposes.
+
 
 Screenshots-
 <img width="1891" height="839" alt="Screenshot 2025-11-29 201449" src="https://github.com/user-attachments/assets/4ada7ad1-20c3-431f-9290-91ec95f6f2e4" />
