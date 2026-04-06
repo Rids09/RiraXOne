@@ -1,4 +1,4 @@
-# ✈️ RiraXOne – Flight Booking Web App
+# ✈️ RiraXOne – Flight Booking Simulation
 
 RiraXOne is a full-stack flight booking web application built using **Flask, HTML, CSS, and JavaScript**.
 It allows users to sign up, log in securely, and book flights with a clean and interactive UI.
