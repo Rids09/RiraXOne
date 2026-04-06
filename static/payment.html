@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <title>Payment – RiraXOne (Mock)</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+  <link rel="shortcut icon" href="https://i.pinimg.com/1200x/59/0f/e7/590fe784586d6b274d278d91df2a5d8e.jpg"
+    type="image/x-icon">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  <!-- Bootstrap CSS -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    body {
+      font-family: 'Rubik', Arial, sans-serif;
+      background: url(https://i.pinimg.com/1200x/98/f1/05/98f105eef962f4b523d1b98f30e9346a.jpg);
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      padding-top: 8rem;
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    .card {
+      max-width: 720px;
+      margin: 24px auto;
+      padding: 30px;
+      /* Increased padding */
+      border-radius: 18px;
+      /* Softer rounded corners */
+      box-shadow: 0 15px 40px rgba(0, 0, 0, .2);
+      /* Deeper shadow */
+      background: #ffffffb7;
+      border: 4px solid #013170;
+      /* Airline blue border */
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      /* Subtle cloud-like pattern or plane icon for visual interest */
+      content: '✈️';
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 40px;
+      opacity: 0.1;
+      transform: rotate(45deg);
+    }
+
+    .amount {
+      font-size: 36px;
+      /* Larger amount */
+      font-weight: 800;
+      color: #960000;
+      /* Changed to red for price emphasis */
+      animation: pulse 1s infinite alternate;
+      /* Simple animation */
+    }
+
+    .muted {
+      color: #666;
+    }
+
+    h3 {
+      color: #013170;
+      font-weight: 900;
+    }
+
+    .btn-primary {
+      background-color: #03691b;
+      /* Success Green for Pay Button */
+      border-color: #03691b;
+      font-weight: 700;
+      transition: background-color 0.3s;
+    }
+
+    .btn-primary:hover {
+      background-color: #00a527;
+      border-color: #00a527;
+    }
+
+    @keyframes pulse {
+      from {
+        opacity: 1;
+      }
+
+      to {
+        opacity: 0.8;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+
+  <div class="card" id="card">
+    <div id="loading">Loading booking...</div>
+
+    <div id="content" style="display:none;">
+      <h3 id="airlineName">RiraXOne</h3>
+      <div class="muted">PNR: <span id="pnrText"></span></div>
+      <hr />
+
+      <h4>Booking Summary</h4>
+      <div>
+        <div class="muted">Route</div>
+        <div id="routeText" style="font-weight:600"></div>
+        <div class="muted">Date & Departure: <span id="travelDate"></span> at <span id="departureTime"></span></div>
+      </div>
+
+      <div style="margin-top:18px">
+        <div class="muted">Class & Passengers</div>
+        <div><span id="classText"></span> • <span id="passengersText"></span> passenger(s)</div>
+      </div>
+
+      <div style="margin-top:25px" class="alert alert-info text-center">
+        <div class="muted">TOTAL AMOUNT DUE</div>
+        <div class="amount" id="amountText"></div>
+      </div>
+
+      <hr />
+
+      <div class="mb-3">
+        <label class="form-label"> Card Number</label>
+        <input id="card" class="form-control" placeholder="0000 1111 2222 3333">
+      </div>
+      <div class="d-flex gap-2 mb-3">
+        <input id="exp" class="form-control" placeholder="MM/YY">
+        <input id="cvv" class="form-control" placeholder="CVV">
+      </div>
+
+      <div class="d-grid">
+        <button id="payBtn" class="btn btn-primary btn-lg">Pay Now</button>
+      </div>
+
+      <div class="mt-3 text-muted small" id="msg"></div>
+    </div>
+  </div>
+
+  <script>
+    const apiBase = (window.location.origin && window.location.origin.startsWith('http')) ? window.location.origin : 'http://127.0.0.1:5000';
+
+    function getQueryParam(name) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(name);
+    }
+
+    async function load() {
+      const bookingId = getQueryParam('booking_id');
+      if (!bookingId) {
+        document.getElementById('loading').innerText = 'Missing booking_id in URL.';
+        return;
+      }
+      try {
+        // Fetch booking details from app.py
+        const res = await fetch(`${apiBase}/booking/${bookingId}`);
+        const data = await res.json();
+        if (!res.ok) { document.getElementById('loading').innerText = data.error || 'Error fetching booking details.'; return; }
+
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('content').style.display = 'block';
+
+        // Populate details
+        document.getElementById('pnrText').innerText = data.pnr || '';
+        document.getElementById('airlineName').innerText = data.airline_name || 'RiraXOne';
+        document.getElementById('routeText').innerText = `${data.from_city || ''} (${data.from_code || ''}) → ${data.to_city || ''} (${data.to_code || ''})`;
+        document.getElementById('travelDate').innerText = data.travel_date || '';
+        document.getElementById('departureTime').innerText = data.departure_time || '';
+        document.getElementById('classText').innerText = data.class || '';
+        document.getElementById('passengersText').innerText = data.passengers || '';
+        document.getElementById('amountText').innerText = `${data.total_amount || 0} ${data.currency || 'INR'}`;
+
+        document.getElementById('payBtn').onclick = async () => {
+          const msg = document.getElementById('msg'); msg.innerText = '';
+          const payBtn = document.getElementById('payBtn'); payBtn.disabled = true; payBtn.innerText = 'Processing...';
+
+          try {
+            // Call payment API in app.py
+            const resp = await fetch(`${apiBase}/pay-booking`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ booking_id: bookingId })
+            });
+            const out = await resp.json();
+            if (!resp.ok) {
+              msg.innerText = out.error || 'Payment failed';
+              payBtn.disabled = false; payBtn.innerText = 'Pay Now (Mock)';
+              return;
+            }
+            msg.innerText = 'Payment successful — redirecting to boarding pass...';
+            // Redirect to the final boarding page
+            setTimeout(() => {
+              window.location.href = `/static/boarding.html?booking_id=${bookingId}`;
+            }, 900);
+          } catch (err) {
+            console.error(err);
+            msg.innerText = 'Network error.';
+            payBtn.disabled = false; payBtn.innerText = 'Pay Now (Mock)';
+          }
+        };
+
+      } catch (err) {
+        document.getElementById('loading').innerText = 'Network error.';
+        console.error(err);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', load);
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RiraXOne</title>
+  <link rel="shortcut icon" href="https://i.pinimg.com/1200x/59/0f/e7/590fe784586d6b274d278d91df2a5d8e.jpg"
+    type="image/x-icon">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+  <style>
+    /* Inline fixes for popups & dropdowns */
+    .user-menu {
+      display: none;
+      position: absolute;
+      right: 1.5rem;
+      top: 4rem;
+      background: #ffffffcc;
+      border-radius: 6px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, .1);
+      padding: .5rem 1rem;
+      z-index: 1200;
+    }
+
+    .user-menu.active {
+      display: block;
+    }
+
+    .popup-form {
+      display: none;
+      position: fixed;
+      inset: 0;
+      align-items: center;
+      justify-content: center;
+      z-index: 1500;
+      background: rgba(0, 0, 0, .4);
+    }
+
+    .popup-form.active {
+      display: flex;
+    }
+
+    .form-box {
+      background: #ffffffcd;
+      padding: 1.5rem;
+      border-radius: 10px;
+      width: 320px;
+      position: relative;
+    }
+
+    .form-box .close-btn {
+      position: absolute;
+      right: 12px;
+      top: 12px;
+      cursor: pointer;
+    }
+
+    .icons .user-btn {
+      background: none;
+      border: none;
+      font-size: 2rem;
+      cursor: pointer;
+      color: #029ee0;
+    }
+
+    .dropdown {
+      display: none;
+      position: absolute;
+      background: #fff;
+      border-radius: 6px;
+      padding: 0.5rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, .1);
+      z-index: 1100;
+    }
+
+    .dropdown.active {
+      display: block;
+    }
+
+    .counter-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 0.3rem 0;
+    }
+
+    .counter button {
+      padding: 0.2rem 0.5rem;
+    }
+
+    .select-box {
+      cursor: pointer;
+      border: 1px solid #ccc;
+      padding: 0.5rem;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="container d-flex align-items-center justify-content-between">
+      <a href="#" class="logo"><i class="fa fa-plane"></i> RiraXOne</a>
+
+      <nav class="nav" id="navbar">
+        <a href="#home">Home</a>
+        <a href="#about">About</a>
+        <a href="#book">Book Flight</a>
+        <a href="#featured">Featured Fares</a>
+        <a href="#offers">Special Offers</a>
+        <a href="#contact">Contact</a>
+      </nav>
+
+      <div class="icons">
+        <button id="user-btn" class="user-btn" aria-haspopup="true" aria-expanded="false" title="Account">
+          <i class="fas fa-user"></i>
+        </button>
+        <span class="fas fa-bars" id="menu-btn"></span>
+      </div>
+    </div>
+
+    <!-- User Menu -->
+    <div class="user-menu" id="user-menu" role="menu" aria-hidden="true">
+      <a href="#" id="login-link">Login</a>
+      <a href="#" id="signup-link">Sign Up</a>
+      <a href="#" id="logout-link">Logout</a>
+    </div>
+
+    <!-- Login Popup -->
+    <div class="popup-form" id="login-form" aria-hidden="true">
+      <div class="form-box" role="dialog" aria-labelledby="login-title" aria-modal="true">
+        <span class="fas fa-times close-btn" data-close></span>
+        <h2 id="login-title">Login</h2>
+        <form id="loginFormLocal" autocomplete="on">
+          <div class="input-group">
+            <label for="login-email">Email ID</label>
+            <input type="email" id="login-email" name="login-email" placeholder="Enter your email" required>
+          </div>
+          <div class="input-group">
+            <label for="login-password">Password</label>
+            <input type="password" id="login-password" name="login-password" placeholder="Enter your password" required>
+          </div>
+          <button type="submit" class="btn">Login</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Signup Popup -->
+    <div class="popup-form" id="signup-form" aria-hidden="true">
+      <div class="form-box" role="dialog" aria-labelledby="signup-title" aria-modal="true">
+        <span class="fas fa-times close-btn" data-close></span>
+        <h2 id="signup-title">Sign Up</h2>
+        <form id="signupFormLocal" autocomplete="on">
+          <div class="input-group">
+            <label for="signup-email">Email ID</label>
+            <input type="email" id="signup-email" name="signup-email" placeholder="Enter your email" required>
+          </div>
+          <div class="input-group">
+            <label for="signup-password">Password</label>
+            <input type="password" id="signup-password" name="signup-password" placeholder="Enter password" required>
+          </div>
+          <div class="input-group">
+            <label for="signup-confirm">Re-enter Password</label>
+            <input type="password" id="signup-confirm" name="signup-confirm" placeholder="Confirm password" required>
+          </div>
+          <button type="submit" class="btn">Sign Up</button>
+        </form>
+      </div>
+    </div>
+  </header>
+
+  <!-- Home Section -->
+  <section class="home" id="home">
+    <div class="content text-center">
+      <h3>RiraXOne</h3>
+      <span>Where every journey takes flight into new horizons</span>
+      <p>At RiraXOne, booking flights is faster, easier, and smarter. Find the best deals, compare top airlines, and
+        take off with confidence—all in just a few clicks.</p>
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section class="about" id="about">
+    <h1 class="heading"><span>About</span> Us</h1>
+    <div class="box-container">
+      <div class="box">
+        <div class="image">
+          <img src="https://i.pinimg.com/736x/08/cd/b2/08cdb20858d0b74cefea4eeb6d1a1817.jpg" alt="Travel Image">
+          <h3>Travel made simple</h3>
+        </div>
+        <div class="content">
+          <h3>Why Choose Us?</h3>
+          <p>With RiraXOne, booking one-way flights is effortless. Enjoy flexible departure times, smart pricing,
+            trusted airlines, transparent fares, and instant confirmations. Whether a business trip or getaway — we make
+            travel stress-free.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Book Flight Section -->
+  <section class="book" id="book">
+    <h1 class="heading"><span>Book</span> Flight</h1>
+    <div class="ticket">
+      <form action="/flights-routes" method="POST" class="flight-form" id="flight-form">
+        <div class="input-box">
+          <label>Departure Airport</label>
+          <div class="select-box" id="from-btn">Select Departure</div>
+
+          <div class="dropdown" id="from-dropdown">
+            <label><input type="radio" name="from-airport" value="DEL"> Delhi</label><br>
+            <label><input type="radio" name="from-airport" value="BOM"> Mumbai</label><br>
+            <label><input type="radio" name="from-airport" value="BLR"> Bengaluru</label><br>
+            <label><input type="radio" name="from-airport" value="MAA"> Chennai</label><br>
+            <label><input type="radio" name="from-airport" value="CCU"> Kolkata</label><br>
+            <label><input type="radio" name="from-airport" value="HYD"> Hyderabad</label><br>
+            <label><input type="radio" name="from-airport" value="PNQ"> Pune</label><br>
+            <label><input type="radio" name="from-airport" value="AMD"> Ahmedabad</label><br>
+
+            <button type="button" id="confirm-from" class="confirm-btn">Confirm</button>
+          </div>
+        </div>
+        <div class="input-box">
+          <label>Arrival Airport</label>
+          <div class="select-box" id="to-btn">Select Destination</div>
+
+          <div class="dropdown" id="to-dropdown">
+            <label><input type="radio" name="to-airport" value="DEL"> Delhi</label><br>
+            <label><input type="radio" name="to-airport" value="BOM"> Mumbai</label><br>
+            <label><input type="radio" name="to-airport" value="BLR"> Bengaluru</label><br>
+            <label><input type="radio" name="to-airport" value="MAA"> Chennai</label><br>
+            <label><input type="radio" name="to-airport" value="CCU"> Kolkata</label><br>
+            <label><input type="radio" name="to-airport" value="HYD"> Hyderabad</label><br>
+            <label><input type="radio" name="to-airport" value="PNQ"> Pune</label><br>
+            <label><input type="radio" name="to-airport" value="AMD"> Ahmedabad</label><br>
+
+            <button type="button" id="confirm-to" class="confirm-btn">Confirm</button>
+          </div>
+        </div>
+        <div class="input-box">
+          <label for="depart">Departing</label>
+          <input type="date" id="travel-date" required>
+        </div>
+        <div class="input-box">
+          <label for="passengers">Passengers</label>
+          <div class="select-box" id="passenger-btn">Select Passengers</div>
+          <div id="passenger-dropdown" class="dropdown">
+            <div class="counter-row">
+              Adults
+              <div class="counter">
+                <button type="button" class="minus">-</button>
+                <span class="count" data-type="adult">1</span>
+                <button type="button" class="plus">+</button>
+              </div>
+            </div>
+            <div class="counter-row">
+              Children
+              <div class="counter">
+                <button type="button" class="minus">-</button>
+                <span class="count" data-type="child">0</span>
+                <button type="button" class="plus">+</button>
+              </div>
+            </div>
+            <div class="counter-row">
+              Infants
+              <div class="counter">
+                <button type="button" class="minus">-</button>
+                <span class="count" data-type="infant">0</span>
+                <button type="button" class="plus">+</button>
+              </div>
+            </div>
+            <button id="confirm-passengers" type="button" class="confirm-btn">Confirm</button>
+          </div>
+        </div>
+        <div class="input-box">
+          <label for="class">Class</label>
+          <div class="select-box" id="class-btn">Select Class</div>
+          <div class="dropdown" id="class-dropdown">
+            <label><input type="radio" name="class-select" value="Premium Economy"> Premium Economy Class</label><br>
+            <label><input type="radio" name="class-select" value="Economy" checked> Economy Class</label><br>
+            <label><input type="radio" name="class-select" value="Business"> Business Class</label><br>
+            <label><input type="radio" name="class-select" value="First"> First Class</label>
+            <button type="button" id="confirm-class" class="confirm-btn">Confirm</button>
+          </div>
+        </div>
+        <button type="submit" class="btn search-btn">Search Flight</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- Featured Fares Section Starts -->
+  <section class="featured" id="featured">
+    <h1 class="heading"><span>Featured</span> Fares</h1>
+
+    <!-- Row 1: Popular & Trending Destinations -->
+    <div class="fare-grid">
+      <!-- Card 1 -->
+      <div class="fare-card">
+        <div class="fare-img"
+          style="background-image: url('https://i.pinimg.com/1200x/09/00/40/090040eaf7fbd6c11727acd0524bc5f2.jpg');">
+        </div>
+        <div class="fare-content">
+          <h3>Escape to Bali.... <span>— From $299</span></h3>
+          <p>Tropical paradise awaits.</p>
+          <button class="btn">Book Now</button>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="fare-card">
+        <div class="fare-img"
+          style="background-image: url('https://i.pinimg.com/1200x/da/3f/6d/da3f6dffdf103e9df5e5905574597579.jpg');">
+        </div>
+        <div class="fare-content">
+          <h3>Experience Tokyo <span>— From $349</span></h3>
+          <p>Where tradition meets technology.</p>
+          <button class="btn">Book Now</button>
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="fare-card">
+        <div class="fare-img"
+          style="background-image: url('https://i.pinimg.com/736x/2f/77/87/2f7787ae4e232224b713d4d027b71ff5.jpg');">
+        </div>
+        <div class="fare-content">
+          <h3>Romantic Paris Getaway <span>— From $399</span></h3>
+          <p>Love, lights, and croissants.</p>
+          <button class="btn">Book Now</button>
+        </div>
+      </div>
+
+      <!-- Card 4 -->
+      <div class="fare-card">
+        <div class="fare-img"
+          style="background-image: url('https://i.pinimg.com/736x/f0/67/1f/f0671fbc040ad131372ff600b9015494.jpg');">
+        </div>
+        <div class="fare-content">
+          <h3>Adventure in New Zealand <span>— From $459</span></h3>
+          <p>Mountains, lakes, and pure adventure.</p>
+          <button class="btn">Book Now</button>
+        </div>
+      </div>
+
+      <!-- Row 2 -->
+      <div class="fare-card">
+        <div class="fare-img"
+          style="background-image: url('https://i.pinimg.com/1200x/25/1f/ee/251fee82ed842cdefab55b793bb99b89.jpg');">
+        </div>
+        <div class="fare-content">
+          <h3>Winter Wonderland — Switzerland <span>— From $499</span></h3>
+          <p>Ski, sip, and stay cozy.</p>
+          <button class="btn">Book Now</button>
+        </div>
+      </div>
+
+      <div class="fare-card">
+        <div class="fare-img"
+          style="background-image: url('https://i.pinimg.com/736x/dc/55/ba/dc55ba2da25f047e2941363a758dc9a4.jpg');">
+        </div>
+        <div class="fare-content">
+          <h3>Dubai Luxury Escape <span>— From $379</span></h3>
+          <p>Sky-high luxury for less.</p>
+          <button class="btn">Book Now</button>
+        </div>
+      </div>
+
+      <div class="fare-card">
+        <div class="fare-img"
+          style="background-image: url('https://i.pinimg.com/736x/75/1e/f0/751ef07a15505b64fbf58843263ff375.jpg');">
+        </div>
+        <div class="fare-content">
+          <h3>Discover the USA <span>— From $499</span></h3>
+          <p>One ticket, endless experiences.</p>
+          <button class="btn">Book Now</button>
+        </div>
+      </div>
+
+      <div class="fare-card">
+        <div class="fare-img"
+          style="background-image: url('https://i.pinimg.com/736x/49/53/db/4953dbfd8c8db40393e5c903923ba689.jpg');">
+        </div>
+        <div class="fare-content">
+          <h3>Hidden Gems of Southeast Asia <span>— From $259</span></h3>
+          <p>Beyond the beaten path.</p>
+          <button class="btn">Book Now</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- Featured Fares Section Ends -->
+
+  <!-- Special Offers Section Starts -->
+  <section class="offers" id="offers">
+    <h1 class="heading"><span>Special</span> In-Flight Offers</h1>
+
+    <div class="offer-grid">
+      <!-- Card 1 -->
+      <div class="offer-card">
+        <div class="offer-img"
+          style="background-image: url('https://i.pinimg.com/736x/3a/73/4b/3a734ba2475a213a17334b9c9d502088.jpg');">
+        </div>
+        <div class="offer-content">
+          <h3>Gourmet Dining Experience</h3>
+          <h4>Savor chef-crafted meals at 30,000 feet.</h4>
+          <p>Enjoy a curated international menu with regional flavors, fresh ingredients, and customizable meal options
+            — including vegetarian and halal choices.</p>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="offer-card">
+        <div class="offer-img"
+          style="background-image: url('https://i.pinimg.com/1200x/79/85/12/7985128e5ff6e214d31f978f3e6a196f.jpg');">
+        </div>
+        <div class="offer-content">
+          <h3>Premium Lounge Access</h3>
+          <h4>Relax before you fly.</h4>
+          <p>Unwind in exclusive lounges with complimentary snacks, Wi-Fi, and shower facilities before your flight.</p>
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="offer-card">
+        <div class="offer-img"
+          style="background-image: url('https://i.pinimg.com/1200x/e5/b3/9c/e5b39c58f00b93271915f3c294b4a5b5.jpg');">
+        </div>
+        <div class="offer-content">
+          <h3>Extra Comfort Seating</h3>
+          <h4>More space, more comfort.</h4>
+          <p>Upgrade to extra-legroom seats or lie-flat beds in Business Class for a restful journey.</p>
+        </div>
+      </div>
+
+      <!-- Card 4 -->
+      <div class="offer-card">
+        <div class="offer-img"
+          style="background-image: url('https://i.pinimg.com/736x/90/80/5a/90805a2ddc277078c308b80b51e44ecc.jpg');">
+        </div>
+        <div class="offer-content">
+          <h3>Family & Kids’ Comfort Kit</h3>
+          <h4>Travel made easy for little flyers.</h4>
+          <p>Special meals, toys, and early boarding for families to ensure a smooth, stress-free journey.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- Special Offers Section Ends -->
+
+  <!-- Contact Section Starts -->
+  <section class="contact" id="contact">
+    <h1 class="heading"><span>Contact</span> Us</h1>
+    <p class="contact-intro">
+      Have a question about your booking, baggage, or flight? Our support team is here 24/7 to assist you.
+    </p>
+
+    <!-- Contact Info Cards -->
+    <div class="contact-grid">
+      <!-- General Support -->
+      <div class="contact-card">
+        <h3>Customer Support</h3>
+        <p><strong>Phone:</strong> +1-800-AIRLINE (24/7)</p>
+        <p><strong>Email:</strong> support@RiraXOne.com</p>
+        <button class="btn">Chat with an Agent</button>
+      </div>
+
+      <!-- Booking Support -->
+      <div class="contact-card">
+        <h3> Flight Booking Support</h3>
+        <p><strong>Phone:</strong> +1-800-BOOK-FLY</p>
+        <p><strong>Email:</strong> bookings@RiraXOne.com</p>
+      </div>
+
+      <!-- Refunds -->
+      <div class="contact-card">
+        <h3>Refunds & Cancellations</h3>
+        <p><strong>Email:</strong> refunds@RiraXOne.com</p>
+        <button class="btn">Submit Refund Request</button>
+      </div>
+
+      <!-- Feedback -->
+      <div class="contact-card">
+        <h3>Feedback & Complaints</h3>
+        <p><strong>Email:</strong> feedback@RiraXOne.com</p>
+        <button class="btn">Give Feedback</button>
+      </div>
+    </div>
+
+    <!-- Contact Form -->
+    <div class="contact-form">
+      <h2>Send Us a Message</h2>
+      <form id="contactForm">
+        <div class="form-row">
+          <input type="text" id="name" placeholder="Your Name" required>
+          <input type="email" id="email" placeholder="Your Email" required>
+        </div>
+        <div class="form-row">
+          <select id="subject" required>
+            <option value="">Select Subject</option>
+            <option value="booking">Booking</option>
+            <option value="refund">Refund</option>
+            <option value="baggage">Lost Item</option>
+            <option value="feedback">Feedback</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <textarea id="message" rows="5" placeholder="Your Message" required></textarea>
+        <input type="file" id="attachment" accept=".jpg,.png,.pdf" />
+        <button type="submit" class="btn">Send Message</button>
+        <p id="formMessage" class="form-message"></p>
+      </form>
+    </div>
+  </section>
+  <!-- Contact Section Ends -->
+
+  <!-- Footer Section Starts -->
+  <footer class="footer">
+    <div class="footer-container">
+
+      <!-- Airline Info -->
+      <div class="footer-col">
+        <h3>RiraXOne Airlines</h3>
+        <p>Connecting the world with comfort, care, and class. Fly smarter, fly RiraXOne.</p>
+      </div>
+
+      <!-- Quick Links -->
+      <div class="footer-col">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="#home">Home</a></li>
+          <li><a href="#featured">Featured Fares</a></li>
+          <li><a href="#offers">Special Offers</a></li>
+          <li><a href="#contact">Contact</a></li>
+          <li><a href="#about">About Us</a></li>
+        </ul>
+      </div>
+
+      <!-- Customer Support -->
+      <div class="footer-col">
+        <h4>Customer Support</h4>
+        <ul>
+          <li><a href="mailto:support@RiraXOne.com">support@yourairline.com</a></li>
+          <li><a href="tel:+1800AIRLINE">+1-800-AIRLINE</a></li>
+          <li><a href="#">Refund Policy</a></li>
+          <li><a href="#">Baggage Info</a></li>
+        </ul>
+      </div>
+
+      <!-- Social Media -->
+      <div class="footer-col">
+        <h4>Follow Us</h4>
+        <div class="social-links">
+          <a href="#"><i class="fab fa-facebook-f"></i></a>
+          <a href="#"><i class="fab fa-twitter"></i></a>
+          <a href="#"><i class="fab fa-instagram"></i></a>
+          <a href="#"><i class="fab fa-linkedin"></i></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>© 2026 RiraXOne Airlines. All rights reserved. ||
+        Created by - Rishika Pandagre & Ridhi Singh</p>
+    </div>
+  </footer>
+  <!-- Footer Section Ends -->
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Custom JS -->
+  <script>
+  // ---------- ELEMENTS ----------
+  const userBtn = document.getElementById('user-btn');
+  const userMenu = document.getElementById('user-menu');
+  const loginForm = document.getElementById('login-form');
+  const signupForm = document.getElementById('signup-form');
+  const loginLink = document.getElementById('login-link');
+  const signupLink = document.getElementById('signup-link');
+  const closeButtons = document.querySelectorAll('[data-close], .close-btn');
+
+  // ---------- HIDE ALL ----------
+  function hideAllPopups() {
+    [userMenu, loginForm, signupForm].forEach(el => {
+      if (el) {
+        el.classList.remove('active');
+        el.setAttribute('aria-hidden', 'true');
+      }
+    });
+  }
+
+  // ---------- SHOW POPUP ----------
+  function showPopup(popupEl) {
+    hideAllPopups();
+    popupEl.classList.add('active');
+    popupEl.setAttribute('aria-hidden', 'false');
+
+    const firstInput = popupEl.querySelector('input');
+    if (firstInput) firstInput.focus();
+  }
+
+  // ---------- USER MENU ----------
+  userBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    userMenu.classList.toggle('active');
+  });
+
+  loginLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    showPopup(loginForm);
+  });
+
+  signupLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    showPopup(signupForm);
+  });
+
+  // ---------- CLOSE BUTTONS ----------
+  closeButtons.forEach(btn => {
+    btn.addEventListener('click', hideAllPopups);
+  });
+
+  // ---------- OUTSIDE CLICK ----------
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.form-box') && !e.target.closest('#user-btn')) {
+      hideAllPopups();
+    }
+  });
+
+  // ---------- SIGNUP ----------
+  document.getElementById('signupFormLocal').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const email = document.getElementById('signup-email').value;
+    const password = document.getElementById('signup-password').value;
+    const confirm = document.getElementById('signup-confirm').value;
+
+    if (password !== confirm) {
+      alert("Passwords do not match!");
+      return;
+    }
+
+    const res = await fetch('/api/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        username: email.split('@')[0],
+        email,
+        password
+      })
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      alert("Signup successful! Please login.");
+      showPopup(loginForm);
+    } else {
+      alert(data.error);
+    }
+  });
+
+  // ---------- LOGIN ----------
+  document.getElementById('loginFormLocal').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const email = document.getElementById('login-email').value;
+    const password = document.getElementById('login-password').value;
+
+    const res = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      alert("Login successful!");
+
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('username', data.username);
+
+      updateUIAfterLogin(data.username);
+
+      hideAllPopups();
+    } else {
+      alert(data.error);
+    }
+  });
+
+  // ---------- UPDATE UI AFTER LOGIN ----------
+  function updateUIAfterLogin(username) {
+    userBtn.innerHTML = `<i class="fas fa-user"></i> ${username}`;
+
+    userMenu.innerHTML = `
+      <a href="#" id="logout-link">Logout</a>
+    `;
+
+    document.getElementById('logout-link').addEventListener('click', logoutHandler);
+  }
+
+  // ---------- LOGOUT ----------
+  function logoutHandler(e) {
+    e.preventDefault();
+
+    localStorage.removeItem('token');
+    localStorage.removeItem('username');
+
+    alert("Logged out successfully!");
+
+    location.reload();
+  }
+
+  // ---------- LOAD USER ON REFRESH ----------
+  window.addEventListener('load', () => {
+    const savedUser = localStorage.getItem('username');
+
+    if (savedUser) {
+      updateUIAfterLogin(savedUser);
+    }
+  });
+
+</script>
+</body>
+
+</html>

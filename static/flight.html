@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Available Flights</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="shortcut icon" href="https://i.pinimg.com/1200x/59/0f/e7/590fe784586d6b274d278d91df2a5d8e.jpg"
+        type="image/x-icon">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        /* Global Settings and Body Background */
+        body {
+            font-family: 'Rubik', Arial, sans-serif;
+            background-image: url(https://i.pinimg.com/1200x/81/22/d9/8122d9394571727ca1ca4729285a9725.jpg);
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            padding-top: 8rem;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        /* Main Content Container (Translucent/Complementary) */
+        .container {
+            max-width: 900px;
+            /* CRITICAL FIX: Translucent background to let the body image show through. */
+            /* Adjusted to 80% opacity for better text contrast. */
+            background: rgba(255, 255, 255, 0.84);
+            border-radius: 15px;
+            padding: 30px;
+            /* Darker shadow for definition */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        /* General Headings */
+        h2 {
+            color: #013170;
+            margin-bottom: 25px;
+            font-weight: 800;
+            /* Made stronger */
+        }
+
+        /* Individual Flight Card */
+        .flight-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            border-left: 5px solid #013170;
+            background: #ffffffcf;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+        }
+
+        .flight-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            /* Hover shadow stronger */
+        }
+
+        /* Flight Details (Airline/Flight Number) */
+        .details h5 {
+            font-weight: 900;
+            /* Extra bold */
+            margin: 0;
+            color: #130f40;
+            /* Very dark color */
+        }
+
+        /* Departure Time */
+        .details .time {
+            font-size: 26px;
+            /* Slightly larger */
+            font-weight: 900;
+            color: #000;
+        }
+
+        /* Price */
+        .price {
+            font-size: 26px;
+            /* Slightly larger */
+            font-weight: 900;
+            color: #01841f;
+            /* Green for money */
+        }
+
+        /* Route Info (City Codes) */
+        .route-info {
+            text-align: center;
+        }
+
+        .route-info span {
+            font-size: 15px;
+            color: #444;
+            /* Darker than default #666 for better contrast */
+        }
+
+        .loader {
+            text-align: center;
+            padding: 50px;
+            color: #0A62D6;
+            font-size: 1.8rem;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="container">
+        <h2>Available Flights</h2>
+        <h4 id="route-heading">...</h4>
+        <hr>
+        <div id="loading" class="loader">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2">Searching for flights...</p>
+        </div>
+        <div id="flight-list" class="mt-4">
+        </div>
+    </div>
+
+    <script>
+        const apiBase = window.location.origin.startsWith('http') ? window.location.origin : 'http://127.0.0.1:5000';
+
+        function getQueryParam(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        async function loadFlights() {
+            const source = getQueryParam('source');
+            const destination = getQueryParam('destination');
+            const date = getQueryParam('date');
+            const flightClass = getQueryParam('class') || 'Economy';
+            const passengers = getQueryParam('passengers') || '1';
+
+
+            const routeHeading = document.getElementById('route-heading');
+            routeHeading.innerText = `${source} to ${destination} on ${date} (${flightClass}, ${passengers} pax)`;
+
+            const loading = document.getElementById('loading');
+            const flightList = document.getElementById('flight-list');
+
+            if (!source || !destination) {
+                loading.innerHTML = '<div class="alert alert-danger">Missing source or destination codes.</div>';
+                return;
+            }
+
+            try {
+                const url = `${apiBase}/search-flights?source=${source}&destination=${destination}&date=${date}`;
+                const res = await fetch(url);
+                const flights = await res.json();
+
+                loading.style.display = 'none';
+
+                if (!res.ok) {
+                    flightList.innerHTML = `<div class="alert alert-danger">${flights.error || 'Failed to fetch flights.'}</div>`;
+                    return;
+                }
+
+                if (flights.length === 0) {
+                    flightList.innerHTML = '<div class="alert alert-warning">No flights found for this route.</div>';
+                    return;
+                }
+
+                flights.forEach(flight => {
+                    const card = document.createElement('div');
+                    card.classList.add('flight-card');
+                    card.innerHTML = `
+                        <div class="details">
+                            <small class="text-muted">${flight.airline}</small>
+                            <h5>${flight.flight_number}</h5>
+                            <small class="text-success">${flight.stops}</small>
+                        </div>
+                        <div class="route-info">
+                            <div class="time">${flight.departure_time}</div>
+                            <small class="text-muted">${flight.source_city} (${flight.source_code})</small>
+                            <span class="d-block my-1 text-primary">--- ${flight.duration} ---</span>
+                            <small class="text-muted">${flight.dest_city} (${flight.dest_code})</small>
+                        </div>
+                        <div class="text-end">
+                            <div class="price">INR ${flight.price.toLocaleString()}</div>
+                            <button class="btn btn-primary mt-2 btn-sm" onclick="bookFlight('${flight.id}', '${flight.source_code}', '${flight.dest_code}', '${flightClass}', '${passengers}', '${date}')">Book Now</button>
+                        </div>
+                    `;
+                    flightList.appendChild(card);
+                });
+
+            } catch (err) {
+                console.error(err);
+                loading.style.display = 'none';
+                flightList.innerHTML = '<div class="alert alert-danger">A network error occurred. Check if the backend server is running.</div>';
+            }
+        }
+
+        function bookFlight(flightId, source, destination, flightClass, passengers, date) {
+            // Redirect to the booking page with all necessary details
+            window.location.href = `/static/book.html?flight_id=${flightId}&source=${source}&destination=${destination}&class=${flightClass}&passengers=${passengers}&date=${date}`;
+        }
+
+        document.addEventListener('DOMContentLoaded', loadFlights);
+    </script>
+</body>
+
+</html>
