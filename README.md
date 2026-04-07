@@ -42,15 +42,8 @@ It allows users to sign up, log in securely, and book flights with a clean and i
 
 ## 📂 Project Structure
 
-RiraXOne/
-├── app.py
-├── requirements.txt
-├── instance/
-│   └── riraxone.db
-├── templates/
-│   └── RiraXOne.html
-├── static/
-│   └── style.css
+![flow](https://github.com/user-attachments/assets/ae2a810b-0dc4-44ad-b950-a3079a58765d)
+
 
 
 ## ⚙️ Installation & Setup
