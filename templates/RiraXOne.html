@@ -734,6 +734,142 @@
       updateUIAfterLogin(savedUser);
     }
   });
+   // ---------- NAVBAR ----------
+    const menuBtn = document.getElementById('menu-btn');
+    const navbar = document.getElementById('navbar');
+    menuBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      navbar.classList.toggle('active');
+      closeAllDropdowns();
+    });
+
+    // ---------- DROPDOWN UTILITY ----------
+    function closeAllDropdowns() {
+      document.querySelectorAll('.dropdown').forEach(dd => dd.classList.remove('active'));
+    }
+
+    // ---------- AIRPORT DROPDOWNS ----------
+    const fromBtn = document.getElementById('from-btn');
+    const fromDropdown = document.getElementById('from-dropdown');
+    const confirmFrom = document.getElementById('confirm-from');
+
+    const toBtn = document.getElementById('to-btn');
+    const toDropdown = document.getElementById('to-dropdown');
+    const confirmTo = document.getElementById('confirm-to');
+
+    const fromInput = document.createElement('input');
+    fromInput.type = 'hidden';
+    fromInput.id = 'from-input';
+    document.getElementById('flight-form').appendChild(fromInput);
+
+    const toInput = document.createElement('input');
+    toInput.type = 'hidden';
+    toInput.id = 'to-input';
+    document.getElementById('flight-form').appendChild(toInput);
+
+    fromBtn.addEventListener('click', e => { e.stopPropagation(); closeAllDropdowns(); fromDropdown.classList.toggle('active'); });
+    toBtn.addEventListener('click', e => { e.stopPropagation(); closeAllDropdowns(); toDropdown.classList.toggle('active'); });
+
+    confirmFrom.addEventListener('click', () => {
+      const selected = document.querySelector('input[name="from-airport"]:checked');
+      if (selected) {
+        fromBtn.textContent = selected.value;
+        fromInput.value = selected.value;
+      }
+      fromDropdown.classList.remove('active');
+    });
+
+    confirmTo.addEventListener('click', () => {
+      const selected = document.querySelector('input[name="to-airport"]:checked');
+      if (selected) {
+        toBtn.textContent = selected.value;
+        toInput.value = selected.value;
+      }
+      toDropdown.classList.remove('active');
+    });
+
+    // ---------- CLASS DROPDOWN ----------
+    const classBtn = document.getElementById('class-btn');
+    const classDropdown = document.getElementById('class-dropdown');
+    const confirmClassBtn = document.getElementById('confirm-class');
+
+    const classInput = document.createElement('input');
+    classInput.type = 'hidden';
+    classInput.id = 'class-input';
+    document.getElementById('flight-form').appendChild(classInput);
+
+    classBtn.addEventListener('click', e => { e.stopPropagation(); closeAllDropdowns(); classDropdown.classList.toggle('active'); });
+    confirmClassBtn.addEventListener('click', () => {
+      const selected = document.querySelector('input[name="class-select"]:checked');
+      if (selected) {
+        classBtn.textContent = selected.value;
+        classInput.value = selected.value;
+      }
+      classDropdown.classList.remove('active');
+    });
+
+    // ---------- PASSENGERS ----------
+    const passengerBtn = document.getElementById('passenger-btn');
+    const passengerDropdown = document.getElementById('passenger-dropdown');
+    const confirmPassengersBtn = document.getElementById('confirm-passengers');
+
+    const passengersInput = document.createElement('input');
+    passengersInput.type = 'hidden';
+    passengersInput.id = 'passengers-input';
+    document.getElementById('flight-form').appendChild(passengersInput);
+
+    passengerBtn.addEventListener('click', e => { e.stopPropagation(); closeAllDropdowns(); passengerDropdown.classList.toggle('active'); });
+
+    passengerDropdown.querySelectorAll('.counter').forEach(counter => {
+      const minus = counter.querySelector('.minus');
+      const plus = counter.querySelector('.plus');
+      const countSpan = counter.querySelector('.count');
+
+      minus.addEventListener('click', e => {
+        e.stopPropagation();
+        let val = parseInt(countSpan.textContent);
+        if (countSpan.dataset.type === 'adult' && val === 1) return;
+        if (val > 0) countSpan.textContent = val - 1;
+      });
+
+      plus.addEventListener('click', e => {
+        e.stopPropagation();
+        let val = parseInt(countSpan.textContent);
+        if (val < 9) countSpan.textContent = val + 1;
+      });
+    });
+
+    confirmPassengersBtn.addEventListener('click', () => {
+      let total = 0;
+      passengerDropdown.querySelectorAll('.count').forEach(span => total += parseInt(span.textContent));
+      passengerBtn.textContent = `${total} Passenger${total !== 1 ? 's' : ''}`;
+      passengersInput.value = total;
+      passengerDropdown.classList.remove('active');
+    });
+
+    // ---------- STOP PROPAGATION ON DROPDOWNS ----------
+    document.querySelectorAll('.dropdown, .select-box').forEach(el => el.addEventListener('click', e => e.stopPropagation()));
+
+    // ---------- CLOSE DROPDOWNS ON OUTSIDE CLICK ----------
+    window.addEventListener('click', () => closeAllDropdowns());
+
+    // ---------- FLIGHT FORM SUBMIT ----------
+    document.getElementById('flight-form').addEventListener('submit', e => {
+      e.preventDefault();
+      const source = fromInput.value;
+      const destination = toInput.value;
+      const date = document.getElementById('travel-date').value;
+      const flightClass = classInput.value;
+      const totalPassengers = passengersInput.value;
+
+      if (!source || !destination || !date) {
+        alert('Please complete all fields before searching!');
+        return;
+      }
+
+      // Redirect with query params
+      window.location.href = `/static/flight.html?source=${source}&destination=${destination}&date=${date}&class=${flightClass}&passengers=${totalPassengers}`;
+    });
 
 </script>
 </body>
