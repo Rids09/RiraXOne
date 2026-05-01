@@ -10,7 +10,7 @@ It allows users to sign up, log in securely, and book flights with a clean and i
 * 🔑 Secure password hashing using Bcrypt
 * 🎫 Flight search functionality
 * ✈️ Flight booking system (with backend integration)
-* 🧾 User-specific booking history (coming soon / in progress)
+* 🧾 User-specific booking history 
 * 🎨 Responsive UI using Bootstrap
 * 💾 SQLite database for storing user data
 
